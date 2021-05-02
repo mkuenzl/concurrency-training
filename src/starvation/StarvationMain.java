@@ -1,21 +1,33 @@
 package starvation;
 
+import java.util.concurrent.CountDownLatch;
+
 public class StarvationMain extends Thread{
 // Java program to illustrate Starvation concept
-    static int threadcount = 1;
+    static int threadCount = 10;
+    static CountDownLatch latch = new CountDownLatch(threadCount);
 
     public void run()
     {
-        System.out.println(threadcount + "st Child" +
-                " Thread execution starts");
+//        System.out.println(Thread.currentThread().getName() + " execution starts with priority: " + Thread.currentThread().getPriority());
 
-        for (int i = 0; i < 1000; i++) {
-            int beta = 42;
+//        latch.countDown();
+//
+//        try {
+//            latch.await();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+        for (int i = 0; i < 100; i++) {
+            try {
+                sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
-        threadcount++;
-
-        System.out.println("Child thread execution completes");
+        System.out.println(Thread.currentThread().getName() + " execution completes with priority: " + Thread.currentThread().getPriority());
     }
 
     public static void main(String[] args)
@@ -25,28 +37,14 @@ public class StarvationMain extends Thread{
 
         // Thread priorities are set in a way that thread5
         // gets least priority.
-        StarvationMain thread1 = new StarvationMain();
-        thread1.setPriority(10);
-        StarvationMain thread2 = new StarvationMain();
-        thread2.setPriority(9);
-        StarvationMain thread3 = new StarvationMain();
-        thread3.setPriority(8);
-        StarvationMain thread4 = new StarvationMain();
-        thread4.setPriority(1);
-        StarvationMain thread5 = new StarvationMain();
-        thread5.setPriority(1);
+        Thread[] threads = new Thread[threadCount];
 
-        thread1.start();
-        thread2.start();
-        thread3.start();
-        thread4.start();
-
-        // Here thread5 have to wait because of the
-        // other thread. But after waiting for some
-        // interval, thread5 will get the chance of
-        // execution. It is known as Starvation
-
-        thread5.start();
+        for (int i = 0; i < threadCount; i++) {
+            threads[i] = new StarvationMain();
+            threads[i].setPriority((int) (Math.floor(Math.random() * 10) + 1));
+            System.out.println(threads[i].getName() + " execution starts with priority: " + threads[i].getPriority());
+            threads[i].start();
+        }
 
         System.out.println("Main thread execution completes");
     }
