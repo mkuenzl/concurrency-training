@@ -59,16 +59,17 @@ public class TextArt {
     {
         String character;
 
-        synchronized (TextArt.class)
+        synchronized (textCharacters)
         {
             if (counter == textCharacters.size()) {
                 printed = true;
-                return " ";
+                return "";
             }
             character = textCharacters.get(counter);
         }
 
         incCounter();
+
         return character;
     }
 

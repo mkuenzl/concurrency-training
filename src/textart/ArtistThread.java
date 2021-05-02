@@ -11,16 +11,16 @@ public class ArtistThread implements Runnable
             if (TextArt.printed)
             {
                 Thread.currentThread().interrupt();
-                System.out.println(Thread.currentThread().getName() + ": " + printCount);
+                //System.out.println(Thread.currentThread().getName() + ": " + printCount);
                 return;
             }
 
             //printLine();
             printCharacter();
-            printCount++;
+//            printCount++;
 
             try {
-                Thread.sleep(1);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -36,12 +36,12 @@ public class ArtistThread implements Runnable
         }
     }
 
-    void printCharacter()
+    synchronized void printCharacter()
     {
-        synchronized (ArtistThread.class)
-        {
-            String charToPrint = TextArt.getNextCharacter();
-            System.out.print(charToPrint);
-        }
+       // synchronized (ArtistThread.class)
+       // synchronized (TextArt.textCharacters)
+       // {
+            System.out.print(TextArt.getNextCharacter());
+       // }
     }
 }
