@@ -3,6 +3,11 @@ package textart;
 public class ArtistThread implements Runnable
 {
     private int printCount;
+    private Object lock;
+
+    public ArtistThread(Object lock){
+        this.lock = lock;
+    }
 
     @Override
     public void run() {
@@ -38,10 +43,10 @@ public class ArtistThread implements Runnable
 
     synchronized void printCharacter()
     {
-       // synchronized (ArtistThread.class)
-       // synchronized (TextArt.textCharacters)
-       // {
+       //synchronized (ArtistThread.class)
+        synchronized (lock)
+        {
             System.out.print(TextArt.getNextCharacter());
-       // }
+        }
     }
 }

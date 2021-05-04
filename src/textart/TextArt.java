@@ -59,18 +59,14 @@ public class TextArt {
     {
         String character;
 
-        synchronized (textCharacters)
-        {
-            if (counter == textCharacters.size()) {
-                printed = true;
-                return "";
-            }
-            character = textCharacters.get(counter);
+        if (counter == textCharacters.size()) {
+            printed = true;
+            return "";
         }
-
+        character = textCharacters.get(counter);
         incCounter();
-
         return character;
+
     }
 
     public static String getNextLine()
