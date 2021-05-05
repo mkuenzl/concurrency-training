@@ -1,3 +1,7 @@
+/*
+ * Author Sir Clexalot, 2021
+ */
+
 package textart;
 
 import java.io.*;
@@ -6,77 +10,59 @@ import java.util.List;
 
 public class TextArt {
 
-    static List<String> textLines;
-    static List<String> textCharacters;
-    static int counter = 0;
-    static boolean printed = false;
+    private final List<Character> textArtCharacters;
+    private int characterPointer = 0;
 
-    public static void loadPicture(String fileName)
+    public TextArt(String fileName)
     {
-        FileReader fr = null;
-        BufferedReader br = null;
+        textArtCharacters = new ArrayList<>();
 
-        try {
-            fr = new FileReader(fileName);
-            br = new BufferedReader(fr);
-
-            textLines = new ArrayList<>();
-            textCharacters = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName)))
+        {
 
             String line;
             while ((line = br.readLine()) != null)
             {
-                textLines.add(line);
-
                 char[] chars = line.toCharArray();
                 for (int i = 0; i < chars.length; i++) {
-                    textCharacters.add(String.valueOf(chars[i]));
+                    textArtCharacters.add(chars[i]);
                 }
-                textCharacters.add("\n");
+                textArtCharacters.add('\n');
             }
-
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (fr != null)
-            {
-                try {
-                    fr.close();
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
-    private static void incCounter()
+    private final Object pointerLock = new Object();
+
+    private void incrementCharacterPointer()
     {
-        counter++;
+        synchronized (pointerLock)
+        {
+            characterPointer++;
+        }
     }
 
-    public static String getNextCharacter()
+    private int getCharacterPointer()
     {
-        String character;
-
-        if (counter == textCharacters.size()) {
-            printed = true;
-            return "";
+        synchronized (pointerLock)
+        {
+            return characterPointer;
         }
-        character = textCharacters.get(counter);
-        incCounter();
-        return character;
-
     }
 
-    public static String getNextLine()
+    public char getNextCharacter()
     {
-        if (counter >= textLines.size()) {
-            printed = true;
-            return " ";
+        if (!isDone()) {
+            char character = textArtCharacters.get(getCharacterPointer());
+            incrementCharacterPointer();
+            return character;
         }
-        String lineToPrint = textLines.get(counter);
-        incCounter();
-        return lineToPrint;
+        return '\0';
+    }
+
+    public boolean isDone() {
+        return getCharacterPointer() >= textArtCharacters.size();
     }
 }

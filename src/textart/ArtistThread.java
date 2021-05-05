@@ -1,52 +1,42 @@
+/*
+* Author Sir Clexalot, 2021
+*/
+
 package textart;
 
 public class ArtistThread implements Runnable
 {
-    private int printCount;
-    private Object lock;
+    private final TextArt textArt;
 
-    public ArtistThread(Object lock){
-        this.lock = lock;
+    public ArtistThread(TextArt textArt){
+        this.textArt = textArt;
     }
 
     @Override
     public void run() {
-        while (!Thread.interrupted())
+        while (!Thread.currentThread().isInterrupted())
         {
-            if (TextArt.printed)
+            if (textArt.isDone())
             {
-                Thread.currentThread().interrupt();
-                //System.out.println(Thread.currentThread().getName() + ": " + printCount);
-                return;
+                break;
             }
 
-            //printLine();
             printCharacter();
-//            printCount++;
 
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         }
     }
 
-    void printLine()
+    void printCharacter()
     {
-        synchronized (ArtistThread.class)
+        synchronized (textArt)
         {
-            String nextLine = TextArt.getNextLine();
-            System.out.println(Thread.currentThread().getName() + " " + nextLine);
-        }
-    }
-
-    synchronized void printCharacter()
-    {
-       //synchronized (ArtistThread.class)
-        synchronized (lock)
-        {
-            System.out.print(TextArt.getNextCharacter());
+            char nextCharacter = textArt.getNextCharacter();
+            System.out.print(nextCharacter);
         }
     }
 }
